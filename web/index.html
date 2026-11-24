@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GhostSite Hunter | US Business & Dead-Website Lead Engine</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    code, pre { font-family: 'JetBrains Mono', monospace; }
+    .badge-no-web { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+    .badge-expired { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+    .badge-broken { background: rgba(236, 72, 153, 0.15); color: #f472b6; border: 1px solid rgba(236, 72, 153, 0.3); }
+    .badge-outdated { background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3); }
+    .badge-healthy { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+
+  <!-- Top Navigation -->
+  <header class="border-b border-slate-800 bg-slate-900/60 backdrop-blur sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-amber-500 to-rose-500 flex items-center justify-center font-black text-white text-lg shadow-lg shadow-amber-500/20">
+          ⚡
+        </div>
+        <div>
+          <div class="font-bold text-base tracking-tight text-white flex items-center gap-2">
+            GhostSite Hunter
+            <span class="text-[10px] uppercase font-mono px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20">US B2B Engine</span>
+          </div>
+          <div class="text-xs text-slate-400">Autonomous Business & Dead-Website Lead Generation</div>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <button onclick="openAuditModal()" class="px-3.5 py-2 text-xs font-semibold rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition flex items-center gap-1.5">
+          <span>🔍</span> Audit Single URL
+        </button>
+        <button onclick="downloadCSV()" class="px-3.5 py-2 text-xs font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white shadow-md shadow-emerald-600/20 transition flex items-center gap-1.5">
+          <span>📥</span> Export CSV
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-6 py-8">
+    
+    <!-- Metrics Row -->
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
+      <div class="bg-slate-900 border border-slate-800/80 rounded-2xl p-5">
+        <div class="text-xs font-medium text-slate-400 uppercase tracking-wider">Total Leads Audited</div>
+        <div id="metric-total" class="text-3xl font-extrabold text-white mt-2">0</div>
+        <div class="text-xs text-slate-500 mt-1">Active US Local Businesses</div>
+      </div>
+
+      <div class="bg-slate-900 border border-slate-800/80 rounded-2xl p-5 border-l-4 border-l-rose-500">
+        <div class="text-xs font-medium text-slate-400 uppercase tracking-wider">No Website (A+)</div>
+        <div id="metric-noweb" class="text-3xl font-extrabold text-rose-400 mt-2">0</div>
+        <div class="text-xs text-slate-500 mt-1">Zero web presence linked</div>
+      </div>
+
+      <div class="bg-slate-900 border border-slate-800/80 rounded-2xl p-5 border-l-4 border-l-amber-500">
+        <div class="text-xs font-medium text-slate-400 uppercase tracking-wider">Expired / Parked</div>
+        <div id="metric-expired" class="text-3xl font-extrabold text-amber-400 mt-2">0</div>
+        <div class="text-xs text-slate-500 mt-1">NXDOMAIN & GoDaddy/Sedo</div>
+      </div>
+
+      <div class="bg-slate-900 border border-slate-800/80 rounded-2xl p-5 border-l-4 border-l-pink-500">
+        <div class="text-xs font-medium text-slate-400 uppercase tracking-wider">Broken / Outdated</div>
+        <div id="metric-broken" class="text-3xl font-extrabold text-pink-400 mt-2">0</div>
+        <div class="text-xs text-slate-500 mt-1">SSL errors, 404/500, no mobile</div>
+      </div>
+
+      <div class="bg-slate-900 border border-slate-800/80 rounded-2xl p-5 border-l-4 border-l-emerald-500">
+        <div class="text-xs font-medium text-slate-400 uppercase tracking-wider">High Opportunity</div>
+        <div id="metric-hot" class="text-3xl font-extrabold text-emerald-400 mt-2">0%</div>
+        <div class="text-xs text-slate-500 mt-1">Grade A+ & A Conversion Fit</div>
+      </div>
+    </div>
+
+    <!-- Filter & Search Controls -->
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 mb-6 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div class="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-2 md:pb-0">
+        <button onclick="setFilter('ALL')" id="btn-filter-all" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-slate-800 text-white border border-slate-700">All (<span id="count-all">0</span>)</button>
+        <button onclick="setFilter('NO_WEBSITE')" id="btn-filter-noweb" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg hover:bg-slate-800 text-slate-300">No Website (<span id="count-noweb">0</span>)</button>
+        <button onclick="setFilter('EXPIRED')" id="btn-filter-expired" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg hover:bg-slate-800 text-slate-300">Expired/Parked (<span id="count-expired">0</span>)</button>
+        <button onclick="setFilter('BROKEN')" id="btn-filter-broken" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg hover:bg-slate-800 text-slate-300">Broken/Outdated (<span id="count-broken">0</span>)</button>
+        <button onclick="setFilter('HEALTHY')" id="btn-filter-healthy" class="px-3.5 py-1.5 text-xs font-semibold rounded-lg hover:bg-slate-800 text-slate-300">Healthy (<span id="count-healthy">0</span>)</button>
+      </div>
+
+      <div class="w-full md:w-80">
+        <input type="text" id="searchInput" oninput="renderTable()" placeholder="Search business, city, niche..." 
+               class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-500">
+      </div>
+    </div>
+
+    <!-- Leads Table -->
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs text-slate-300">
+          <thead class="bg-slate-950 text-slate-400 uppercase font-mono tracking-wider border-b border-slate-800 text-[11px]">
+            <tr>
+              <th class="py-3.5 px-4">Business Details</th>
+              <th class="py-3.5 px-4">Location & Contact</th>
+              <th class="py-3.5 px-4">Website & Status</th>
+              <th class="py-3.5 px-4">Diagnostic Signals</th>
+              <th class="py-3.5 px-4 text-center">Score / Grade</th>
+              <th class="py-3.5 px-4 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="leadsTableBody" class="divide-y divide-slate-800/60 font-sans">
+            <!-- Rendered by JS -->
+          </tbody>
+        </table>
+      </div>
+      <div id="emptyState" class="py-16 text-center text-slate-500 hidden">
+        <div class="text-4xl mb-2">🔭</div>
+        <div class="font-medium">No businesses match the active filter or search.</div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Pitch Modal -->
+  <div id="pitchModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-2xl w-full p-6 shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+        <div>
+          <h3 class="font-bold text-white text-base" id="modalBizName">Personalized Outreach Proposal</h3>
+          <p class="text-xs text-slate-400 mt-0.5" id="modalBizSub">Tailored to detected forensic website flaw</p>
+        </div>
+        <button onclick="closePitchModal()" class="text-slate-400 hover:text-white text-lg">✕</button>
+      </div>
+
+      <!-- Tab Buttons -->
+      <div class="flex gap-2 my-4 border-b border-slate-800 pb-2">
+        <button onclick="switchPitchTab('email')" id="tabBtnEmail" class="px-3 py-1.5 text-xs font-semibold rounded bg-slate-800 text-white">Cold Email</button>
+        <button onclick="switchPitchTab('call')" id="tabBtnCall" class="px-3 py-1.5 text-xs font-semibold rounded text-slate-400 hover:text-white">Cold Call Script</button>
+        <button onclick="switchPitchTab('sms')" id="tabBtnSms" class="px-3 py-1.5 text-xs font-semibold rounded text-slate-400 hover:text-white">SMS / DM</button>
+      </div>
+
+      <!-- Content Areas -->
+      <div class="flex-1 overflow-y-auto space-y-4">
+        <div id="emailPitchView">
+          <div class="text-xs font-medium text-slate-400 mb-1">Subject Line:</div>
+          <div class="bg-slate-950 p-2.5 rounded-lg border border-slate-800 text-xs font-mono text-amber-300 select-all" id="pitchSubject"></div>
+          
+          <div class="text-xs font-medium text-slate-400 mt-3 mb-1">Email Body:</div>
+          <textarea id="pitchBody" readonly class="w-full bg-slate-950 p-3 rounded-lg border border-slate-800 text-xs text-slate-200 font-sans leading-relaxed h-52 resize-none focus:outline-none"></textarea>
+        </div>
+
+        <div id="callPitchView" class="hidden">
+          <div class="text-xs font-medium text-slate-400 mb-1">Cold Call Opener:</div>
+          <textarea id="pitchCallText" readonly class="w-full bg-slate-950 p-3 rounded-lg border border-slate-800 text-xs text-slate-200 font-sans leading-relaxed h-52 resize-none focus:outline-none"></textarea>
+        </div>
+
+        <div id="smsPitchView" class="hidden">
+          <div class="text-xs font-medium text-slate-400 mb-1">Direct SMS / WhatsApp / DM:</div>
+          <textarea id="pitchSmsText" readonly class="w-full bg-slate-950 p-3 rounded-lg border border-slate-800 text-xs text-slate-200 font-sans leading-relaxed h-40 resize-none focus:outline-none"></textarea>
+        </div>
+      </div>
+
+      <div class="pt-4 border-t border-slate-800 flex justify-end gap-3">
+        <button onclick="copyActivePitch()" class="px-4 py-2 text-xs font-bold rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 shadow-md transition flex items-center gap-1.5">
+          <span id="copyBtnIcon">📋</span> <span id="copyBtnText">Copy to Clipboard</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Single URL Audit Modal -->
+  <div id="auditModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-700 rounded-2xl max-w-xl w-full p-6 shadow-2xl">
+      <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+        <h3 class="font-bold text-white text-base">Instant Forensic Website Audit</h3>
+        <button onclick="closeAuditModal()" class="text-slate-400 hover:text-white text-lg">✕</button>
+      </div>
+      <div class="py-4">
+        <label class="block text-xs font-medium text-slate-400 mb-1">Enter Business Website or Domain:</label>
+        <div class="flex gap-2">
+          <input type="text" id="auditInputUrl" placeholder="e.g. acmeplumbing.com" 
+                 class="flex-1 bg-slate-950 border border-slate-800 rounded-lg px-3.5 py-2 text-xs text-white focus:outline-none focus:border-amber-500">
+          <button onclick="runSingleAudit()" class="px-4 py-2 text-xs font-bold rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 transition">
+            Scan Now
+          </button>
+        </div>
+        <div id="auditLoader" class="hidden mt-4 text-xs text-amber-400 flex items-center gap-2">
+          <span class="animate-spin">⏳</span> Running DNS, SSL, HTTP & parking forensics...
+        </div>
+        <div id="auditResultBox" class="hidden mt-4 p-4 rounded-xl bg-slate-950 border border-slate-800 text-xs space-y-2">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let allLeads = [];
+    let currentFilter = 'ALL';
+    let currentActiveLead = null;
+    let activePitchTab = 'email';
+
+    async function loadData() {
+      try {
+        const res = await fetch('/api/leads');
+        allLeads = await res.json();
+        updateMetrics();
+        renderTable();
+      } catch (e) {
+        console.error("Failed to load leads:", e);
+      }
+    }
+
+    function updateMetrics() {
+      const total = allLeads.length;
+      const noWeb = allLeads.filter(l => l.classification === 'NO_WEBSITE').length;
+      const expired = allLeads.filter(l => ['EXPIRED_DOMAIN', 'PARKED_PAGE'].includes(l.classification)).length;
+      const broken = allLeads.filter(l => ['BROKEN_WEBSITE', 'OUTDATED_WEBSITE'].includes(l.classification)).length;
+      const healthy = allLeads.filter(l => l.classification === 'HEALTHY_WEBSITE').length;
+      const hot = allLeads.filter(l => ['A+', 'A'].includes(l.opportunity_grade)).length;
+
+      document.getElementById('metric-total').innerText = total;
+      document.getElementById('metric-noweb').innerText = noWeb;
+      document.getElementById('metric-expired').innerText = expired;
+      document.getElementById('metric-broken').innerText = broken;
+      document.getElementById('metric-hot').innerText = total ? `${Math.round((hot / total) * 100)}%` : '0%';
+
+      document.getElementById('count-all').innerText = total;
+      document.getElementById('count-noweb').innerText = noWeb;
+      document.getElementById('count-expired').innerText = expired;
+      document.getElementById('count-broken').innerText = broken;
+      document.getElementById('count-healthy').innerText = healthy;
+    }
+
+    function setFilter(filter) {
+      currentFilter = filter;
+      const buttons = {
+        'ALL': 'btn-filter-all',
+        'NO_WEBSITE': 'btn-filter-noweb',
+        'EXPIRED': 'btn-filter-expired',
+        'BROKEN': 'btn-filter-broken',
+        'HEALTHY': 'btn-filter-healthy'
+      };
+      for (const [k, id] of Object.entries(buttons)) {
+        const btn = document.getElementById(id);
+        if (k === filter) {
+          btn.className = "px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-slate-800 text-white border border-slate-700";
+        } else {
+          btn.className = "px-3.5 py-1.5 text-xs font-semibold rounded-lg hover:bg-slate-800 text-slate-400";
+        }
+      }
+      renderTable();
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('leadsTableBody');
+      const emptyState = document.getElementById('emptyState');
+      const q = document.getElementById('searchInput').value.toLowerCase().trim();
+
+      const filtered = allLeads.filter(lead => {
+        // Category filter
+        if (currentFilter === 'NO_WEBSITE' && lead.classification !== 'NO_WEBSITE') return false;
+        if (currentFilter === 'EXPIRED' && !['EXPIRED_DOMAIN', 'PARKED_PAGE'].includes(lead.classification)) return false;
+        if (currentFilter === 'BROKEN' && !['BROKEN_WEBSITE', 'OUTDATED_WEBSITE'].includes(lead.classification)) return false;
+        if (currentFilter === 'HEALTHY' && lead.classification !== 'HEALTHY_WEBSITE') return false;
+
+        // Search query
+        if (q) {
+          const match = (lead.business_name || '').toLowerCase().includes(q) ||
+                        (lead.city || '').toLowerCase().includes(q) ||
+                        (lead.niche || '').toLowerCase().includes(q) ||
+                        (lead.phone || '').toLowerCase().includes(q);
+          if (!match) return false;
+        }
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = '';
+        emptyState.classList.remove('hidden');
+        return;
+      }
+
+      emptyState.classList.add('hidden');
+      tbody.innerHTML = filtered.map(lead => {
+        let badgeClass = 'badge-broken';
+        let badgeText = lead.classification;
+        if (lead.classification === 'NO_WEBSITE') {
+          badgeClass = 'badge-no-web';
+          badgeText = 'NO WEBSITE';
+        } else if (['EXPIRED_DOMAIN', 'PARKED_PAGE'].includes(lead.classification)) {
+          badgeClass = 'badge-expired';
+          badgeText = lead.classification === 'PARKED_PAGE' ? 'PARKED DOMAIN' : 'EXPIRED NXDOMAIN';
+        } else if (lead.classification === 'OUTDATED_WEBSITE') {
+          badgeClass = 'badge-outdated';
+          badgeText = 'OUTDATED';
+        } else if (lead.classification === 'HEALTHY_WEBSITE') {
+          badgeClass = 'badge-healthy';
+          badgeText = 'HEALTHY';
+        }
+
+        const signals = (lead.outdated_signals || []).slice(0, 2).map(s => 
+          `<span class="inline-block bg-slate-950 text-slate-400 border border-slate-800 text-[10px] px-2 py-0.5 rounded mr-1 mb-1">${s}</span>`
+        ).join('') || '<span class="text-slate-600 text-[10px]">None</span>';
+
+        const gradeColors = {
+          'A+': 'text-rose-400 bg-rose-500/10 border-rose-500/30',
+          'A': 'text-amber-400 bg-amber-500/10 border-amber-500/30',
+          'B+': 'text-purple-400 bg-purple-500/10 border-purple-500/30',
+          'C': 'text-slate-400 bg-slate-800 border-slate-700'
+        };
+        const gradeColor = gradeColors[lead.opportunity_grade] || gradeColors['C'];
+
+        return `
+          <tr class="hover:bg-slate-800/40 transition">
+            <td class="py-3.5 px-4">
+              <div class="font-bold text-slate-100">${lead.business_name}</div>
+              <div class="text-[11px] text-slate-400 mt-0.5 flex items-center gap-1.5">
+                <span class="text-amber-400/80 font-mono">${lead.niche || 'Local Business'}</span>
+                ${lead.rating ? `<span>• ★ ${lead.rating} (${lead.reviews_count || 0})</span>` : ''}
+              </div>
+            </td>
+            <td class="py-3.5 px-4">
+              <div class="text-slate-300">${lead.city}${lead.state ? ', ' + lead.state : ''}</div>
+              <div class="mt-0.5">
+                ${lead.phone ? `<a href="tel:${lead.phone}" class="font-mono text-xs text-sky-400 hover:underline">📞 ${lead.phone}</a>` : '<span class="text-slate-600 text-[11px]">No Phone</span>'}
+              </div>
+            </td>
+            <td class="py-3.5 px-4">
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${badgeClass}">
+                ${badgeText}
+              </span>
+              <div class="mt-1 font-mono text-[11px] text-slate-400 truncate max-w-[200px]" title="${lead.website || ''}">
+                ${lead.website ? `<a href="${lead.website}" target="_blank" class="hover:text-amber-400 hover:underline">${lead.website}</a>` : '<span class="text-rose-400/80">Null / Missing</span>'}
+              </div>
+            </td>
+            <td class="py-3.5 px-4 max-w-[260px]">
+              <div>${signals}</div>
+            </td>
+            <td class="py-3.5 px-4 text-center">
+              <div class="inline-block px-2.5 py-0.5 rounded text-xs font-black border ${gradeColor}">
+                ${lead.opportunity_grade}
+              </div>
+              <div class="text-[10px] font-mono text-slate-400 mt-1">${lead.opportunity_score}/100</div>
+            </td>
+            <td class="py-3.5 px-4 text-right">
+              <button onclick='openPitchModal(${JSON.stringify(lead).replace(/'/g, "&#39;")})' 
+                      class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-amber-500/15 hover:bg-amber-500/25 text-amber-400 border border-amber-500/30 transition">
+                ⚡ Pitch
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function openPitchModal(lead) {
+      currentActiveLead = lead;
+      document.getElementById('modalBizName').innerText = lead.business_name;
+      document.getElementById('modalBizSub').innerText = `${lead.niche || 'Business'} in ${lead.city || 'US'} • Status: ${lead.classification}`;
+      document.getElementById('pitchSubject').innerText = lead.pitch_email_subject || 'Outreach Subject';
+      document.getElementById('pitchBody').value = lead.pitch_email_body || '';
+      document.getElementById('pitchCallText').value = lead.pitch_cold_call || '';
+      document.getElementById('pitchSmsText').value = lead.pitch_sms || '';
+      switchPitchTab('email');
+      document.getElementById('pitchModal').classList.remove('hidden');
+    }
+
+    function closePitchModal() {
+      document.getElementById('pitchModal').classList.add('hidden');
+    }
+
+    function switchPitchTab(tab) {
+      activePitchTab = tab;
+      const views = {
+        'email': 'emailPitchView',
+        'call': 'callPitchView',
+        'sms': 'smsPitchView'
+      };
+      const btns = {
+        'email': 'tabBtnEmail',
+        'call': 'tabBtnCall',
+        'sms': 'tabBtnSms'
+      };
+      for (const [k, id] of Object.entries(views)) {
+        document.getElementById(id).classList.toggle('hidden', k !== tab);
+      }
+      for (const [k, id] of Object.entries(btns)) {
+        const btn = document.getElementById(id);
+        if (k === tab) {
+          btn.className = "px-3 py-1.5 text-xs font-semibold rounded bg-slate-800 text-white";
+        } else {
+          btn.className = "px-3 py-1.5 text-xs font-semibold rounded text-slate-400 hover:text-white";
+        }
+      }
+    }
+
+    function copyActivePitch() {
+      let textToCopy = '';
+      if (activePitchTab === 'email') {
+        const sub = document.getElementById('pitchSubject').innerText;
+        const body = document.getElementById('pitchBody').value;
+        textToCopy = `Subject: ${sub}\n\n${body}`;
+      } else if (activePitchTab === 'call') {
+        textToCopy = document.getElementById('pitchCallText').value;
+      } else {
+        textToCopy = document.getElementById('pitchSmsText').value;
+      }
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        document.getElementById('copyBtnText').innerText = "Copied!";
+        document.getElementById('copyBtnIcon').innerText = "✓";
+        setTimeout(() => {
+          document.getElementById('copyBtnText').innerText = "Copy to Clipboard";
+          document.getElementById('copyBtnIcon').innerText = "📋";
+        }, 2000);
+      });
+    }
+
+    function openAuditModal() {
+      document.getElementById('auditModal').classList.remove('hidden');
+    }
+    function closeAuditModal() {
+      document.getElementById('auditModal').classList.add('hidden');
+    }
+
+    async function runSingleAudit() {
+      const url = document.getElementById('auditInputUrl').value.trim();
+      if (!url) return;
+      document.getElementById('auditLoader').classList.remove('hidden');
+      document.getElementById('auditResultBox').classList.add('hidden');
+      try {
+        const resp = await fetch('/api/audit', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ url })
+        });
+        const data = await resp.json();
+        document.getElementById('auditLoader').classList.add('hidden');
+        document.getElementById('auditResultBox').classList.remove('hidden');
+        document.getElementById('auditResultBox').innerHTML = `
+          <div class="font-bold text-white text-sm">Classification: <span class="text-amber-400">${data.classification}</span> (Grade: ${data.opportunity_grade}, Score: ${data.opportunity_score})</div>
+          <div class="text-slate-400">DNS Resolves: ${data.dns_resolves ? 'Yes' : 'No'} | SSL: ${data.ssl_valid ? 'Valid' : 'Invalid/None'}</div>
+          <div class="text-slate-400">Parked: ${data.is_parked ? 'YES (' + data.parking_provider + ')' : 'No'} | Viewport: ${data.has_viewport ? 'Present' : 'MISSING (Not Mobile Friendly)'}</div>
+          <div class="text-rose-300 font-mono mt-2">${(data.outdated_signals || []).join(' • ')}</div>
+        `;
+      } catch (e) {
+        document.getElementById('auditLoader').classList.add('hidden');
+        alert("Audit failed: " + e);
+      }
+    }
+
+    function downloadCSV() {
+      window.location.href = '/api/export';
+    }
+
+    // Initial boot
+    loadData();
+  </script>
+</body>
+</html>
